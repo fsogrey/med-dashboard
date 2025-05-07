@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import api from './services/api';
 import './App.css';
+import api from './services/api';
 
 function App() {
-  const [manufacturers, setManufacturers] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await api.getManufacturers();
-        setManufacturers(res.data);
+      const res = await api.getProducts();
+      setProducts(res.data);
 
-        // Auto-refresh every 5 seconds
-        const interval = setInterval(async () => {
-          const updatedRes = await api.getManufacturers();
-          setManufacturers(updatedRes.data);
-        }, 5000);
+      const interval = setInterval(async () => {
+        const updatedRes = await api.getProducts();
+        setProducts(updatedRes.data);
+      }, 5000);
 
-        return () => clearInterval(interval);
-      } catch (err) {
-        console.error('Failed to fetch manufacturers:', err);
-      }
+      return () => clearInterval(interval);
     };
 
     fetchData();
@@ -33,18 +28,18 @@ function App() {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Country</th>
-            <th>Sells in UAE</th>
-            <th>Certifications</th>
+            <th>Type</th>
+            <th>Material</th>
+            <th>UAE Availability</th>
           </tr>
         </thead>
         <tbody>
-          {manufacturers.map(m => (
-            <tr key={m._id}>
-              <td>{m.name}</td>
-              <td>{m.country}</td>
-              <td>{m.sellsInUAE ? 'Yes' : 'No'}</td>
-              <td>{m.certifications?.join(', ') || ''}</td>
+          {products.map(p => (
+            <tr key={p._id}>
+              <td>{p.name}</td>
+              <td>{p.type}</td>
+              <td>{p.specs?.material || ''}</td>
+              <td>{p.uaeAvailability ? 'Yes' : 'No'}</td>
             </tr>
           ))}
         </tbody>
